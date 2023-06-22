@@ -48,8 +48,7 @@ class App(ctk.CTk):
     def auto(self, Tnum, InspectElement):
         for _ in range(int(Tnum)):
             self.shuffle_and_type()
-        self.F1
-        2(InspectElement, 0)
+        self.F12(InspectElement, 0)
 
     def get_value(self):
         pyautogui.sleep(5)

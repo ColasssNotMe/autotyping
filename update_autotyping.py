@@ -1,7 +1,15 @@
 import json
 import flet as ft
+import pyautogui
+import string
+import random
 
-# TODO: make save function
+# TODO: false and true is case sensitive
+letters = string.ascii_letters
+random.seed(10)
+X = random.choices(letters, k=10)
+time_interval = 0.65
+times = 0
 
 
 class userpage(ft.UserControl):
@@ -45,11 +53,21 @@ class userpage(ft.UserControl):
                         ft.IconButton(icon=ft.icons.SETTINGS, on_click=self.settingC),
                     ],
                 ),
-                ft.Column(controls=[self.count, self.timeInt, self.isF12]),
+                ft.Column(
+                    alignment=ft.MainAxisAlignment.END,
+                    controls=[
+                        self.count,
+                        self.timeInt,
+                        self.isF12,
+                        ft.FloatingActionButton(
+                            icon=ft.icons.DIRECTIONS_RUN,
+                            on_click=self.run,
+                        ),
+                    ],
+                ),
             ],
         )
-
-        self.editView = ft.Column(
+        self.settingView = ft.Column(
             visible=False,
             alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
             controls=[
@@ -70,16 +88,42 @@ class userpage(ft.UserControl):
                 ft.Column(controls=[self.countDef, self.timeDef, self.isF12Def]),
             ],
         )
-        return ft.Column(controls=[self.mainView, self.editView])
+        return ft.Column(controls=[self.mainView, self.settingView])
+
+    def shuffle_type(self):
+        self.letter = string.ascii_letters + string.digits
+        random.seed(10)
+        self.value = self.count.value
+        for _ in range(int(self.value)):
+            self.shuff2()
+
+    def shuff2(self):
+        Xshuff = list(X)
+        random.shuffle(Xshuff)
+        Xshuff = "".join(Xshuff)
+        pyautogui.hotkey("ctrl", "e")
+        pyautogui.typewrite(Xshuff)
+        pyautogui.press("enter")
+        pyautogui.sleep(float(self.timeInt.value))
+
+    def run(self, e):
+        pyautogui.sleep(5)
+        self.shuffle_type()
+        if self.isF12.value == "true":
+            print("complete")
+            pyautogui.press("F12")
+            for i in range(40):
+                print(i)
+                self.shuff2()
 
     def settingC(self, e):
         self.mainView.visible = False
-        self.editView.visible = True
+        self.settingView.visible = True
         self.update()
 
     def returnC(self, e):
         self.mainView.visible = True
-        self.editView.visible = False
+        self.settingView.visible = False
         self.update()
 
     def saveC(self, e):
@@ -98,17 +142,17 @@ class userpage(ft.UserControl):
 
 
 def main(page: ft.Page):
-    page.window_height = 300
+    page.window_height = 350
     page.window_width = 500
 
     with open("config.txt", "r") as f:
         count = f.readline().strip()
-        isF12 = f.readline().strip()
         timeInt = f.readline().strip()
+        isF12 = f.readline().strip()
         f.close()
 
     up = userpage(count, timeInt, isF12)
     page.add(up)
 
 
-ft.app(target=main)
+ft.app(main)
