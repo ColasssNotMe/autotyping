@@ -24,16 +24,24 @@ class MyTabView(ctk.CTkTabview):
 
 
 class App(ctk.CTk):
+    # init json file
+    # with open("config.json", "w") as f:
+    #     data = {"normal": "35", "startTime": "0", "endTime": "1"}
+    #     json.dump(data, f)
+
     def save_settings(self):
         super().__init__()
-        with open("config.txt", "w") as f:
-            f.write(
-                self.defcount_entry.get()
-                + "\n"
-                + self.deftime_entry_start.get()
-                + "\n"
-                + self.deftime_entry_end.get()
-            )
+        normal = self.defcount_entry.get()
+        startTime = self.deftime_entry_start.get()
+        endTime = self.deftime_entry_end.get()
+        userInput = {
+            "normal": normal,
+            "startTime": startTime,
+            "endTime": endTime,
+        }
+
+        with open("config.json", "w+") as f:
+            json.dump(userInput, f)
             f.close()
 
     def shuffle_and_type(self):
@@ -74,6 +82,10 @@ class App(ctk.CTk):
         thread = threading.Thread(target=self.get_value)
         thread.start()
 
+    def destroy(self):
+        self.tab_view.destroy()
+        super().destroy()
+
     def __init__(self):
         super().__init__()
         self.geometry("700x400")
@@ -81,7 +93,7 @@ class App(ctk.CTk):
         self.tab_view = MyTabView(master=self, width=650, height=350)
         self.tab_view.grid(row=0, column=0, padx=30, pady=40)
 
-        self.newfile = open("config.txt", "a")
+        self.newfile = open("config.json", "a")
 
         self.LABEL = ctk.CTkLabel(
             self,
@@ -176,11 +188,11 @@ class App(ctk.CTk):
 
         self.progressbar = ctk.CTkProgressBar
 
-        with open("config.txt", "r") as f:
-            self.ENTRY_COUNT.insert(0, f.readline().strip())
-            self.entry_time_start.insert(0, f.readline().strip())
-            self.entry_time_end.insert(0, f.readline().strip())
-            f.close()
+        with open("config.json", "r") as file:
+            data = json.load(file)
+            self.ENTRY_COUNT.insert(0, data["normal"])
+            self.entry_time_start.insert(0, data["startTime"])
+            self.entry_time_end.insert(0, data["endTime"])
 
 
 app = App()
