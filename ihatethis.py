@@ -84,8 +84,10 @@ class App(ctk.CTk):
                 InspectCount += 1
                 self.shuffle_and_type()
             self.running_label.configure(text="Stopped", text_color="red")
-        else:
-            self.running_label.configure(text="Stopped", text_color="red")
+            self.after(3000, self.setIdle)
+
+    def setIdle(self):
+        self.running_label.configure(text="Idle", text_color="grey")
 
     def auto(self, Tnum, InspectElement):
         for _ in range(int(Tnum)):
