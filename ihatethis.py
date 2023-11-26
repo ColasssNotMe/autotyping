@@ -71,11 +71,11 @@ class App(ctk.CTk):
         random.shuffle(Xshuff)
         Xshuff = "".join(Xshuff)
         pyautogui.hotkey("ctrl", "e")
-        pyautogui.typewrite(Xshuff)
-        pyautogui.press("enter")
-        pyautogui.PAUSE = random.uniform(
+        typingSpeed = random.uniform(
             int(self.entry_time_start.get()), int(self.entry_time_end.get())
         )
+        pyautogui.typewrite(Xshuff, interval=typingSpeed)
+        pyautogui.press("enter")
 
     def F12(self, InspectElement, InspectCount):
         if InspectElement == 1:
