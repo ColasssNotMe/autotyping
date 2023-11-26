@@ -71,11 +71,12 @@ class App(ctk.CTk):
         random.shuffle(Xshuff)
         Xshuff = "".join(Xshuff)
         pyautogui.hotkey("ctrl", "e")
-        pyautogui.typewrite(Xshuff)
-        pyautogui.press("enter")
-        pyautogui.PAUSE = random.uniform(
+        waitTime = random.uniform(
             int(self.entry_time_start.get()), int(self.entry_time_end.get())
         )
+        pyautogui.sleep(waitTime)
+        pyautogui.typewrite(Xshuff, interval=1)
+        pyautogui.press("enter")
 
     def F12(self, InspectElement, InspectCount):
         if InspectElement == 1:
@@ -84,8 +85,10 @@ class App(ctk.CTk):
                 InspectCount += 1
                 self.shuffle_and_type()
             self.running_label.configure(text="Stopped", text_color="red")
-        else:
-            self.running_label.configure(text="Stopped", text_color="red")
+            self.after(3000, self.setIdle)
+
+    def setIdle(self):
+        self.running_label.configure(text="Idle", text_color="grey")
 
     def auto(self, Tnum, InspectElement):
         for _ in range(int(Tnum)):
