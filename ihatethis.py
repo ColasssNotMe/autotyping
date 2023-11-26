@@ -1,10 +1,31 @@
 import pyautogui
-import tkinter
 import string
 import random
 import customtkinter as ctk
 import threading
 import json
+import github
+import semver
+import webbrowser
+
+# check for update
+repo = "ColasssNotMe/autotyping"
+g = github.Github()
+releases = g.get_repo(repo).get_releases()
+
+latest_release = releases[0]
+latest_version = latest_release.tag_name
+
+current_version = "2.2.0"
+
+latest_semver = semver.VersionInfo.parse(latest_version)
+current_semver = semver.VersionInfo.parse(current_version)
+
+##testing purpose only
+# latest_version = "2.4.0"
+# current_version = "2.3.0"
+# latest_semver = semver.VersionInfo.parse("2.3.0")
+# current_semver = semver.VersionInfo.parse("2.2.0")
 
 letters = string.ascii_lowercase
 random.seed(10)
@@ -25,9 +46,9 @@ class MyTabView(ctk.CTkTabview):
 
 class App(ctk.CTk):
     # init json file
-    # with open("config.json", "w") as f:
-    #     data = {"normal": "35", "startTime": "0", "endTime": "1"}
-    #     json.dump(data, f)
+    with open("config.json", "w") as f:
+        data = {"normal": "35", "startTime": "0", "endTime": "1"}
+        json.dump(data, f)
 
     def save_settings(self):
         super().__init__()
@@ -84,6 +105,8 @@ class App(ctk.CTk):
 
     def destroy(self):
         self.tab_view.destroy()
+        self.after_cancel(RecursionError)
+        self.quit()
         super().destroy()
 
     def __init__(self):
@@ -95,6 +118,31 @@ class App(ctk.CTk):
 
         self.newfile = open("config.json", "a")
 
+        def closeUpdateTab():
+            updateWindow.destroy()
+            updateWindow.update()
+
+        if latest_semver > current_semver:
+            print("There is a new release available:", latest_version)
+            updateWindow = ctk.CTkToplevel()
+            updateWindow.title("Update Available")
+            updateWindow.geometry("300x100")
+            updateWindow.resizable(False, False)
+            updateText = ctk.CTkLabel(updateWindow, text="New release available")
+            updateText.pack()
+            updateButton = ctk.CTkButton(
+                updateWindow,
+                text="Update",
+                command=lambda: [
+                    webbrowser.open("https://github.com/ColasssNotMe/autotyping"),
+                    closeUpdateTab(),
+                ],
+            )
+            updateButton.pack()
+
+        else:
+            print("No new releases available")
+
         self.LABEL = ctk.CTkLabel(
             self,
             text="Python autotyping script",
@@ -102,7 +150,7 @@ class App(ctk.CTk):
             height=20,
             font=("Comic Sans", 20),
         )
-        self.LABEL.place(relx=0.5, rely=0.05, anchor=tkinter.CENTER)
+        self.LABEL.place(relx=0.5, rely=0.05, anchor=ctk.CENTER)
 
         self.LABEL_COUNT = ctk.CTkLabel(
             self.tab_view.tab("Main Tab"),
@@ -169,22 +217,22 @@ class App(ctk.CTk):
         Save_button = ctk.CTkButton(
             self.tab_view.tab("Settings"), text="Save", command=self.save_settings
         )
-        Save_button.place(relx=0.85, rely=0.86, anchor=tkinter.CENTER)
+        Save_button.place(relx=0.85, rely=0.86, anchor=ctk.CENTER)
 
         Submit_button = ctk.CTkButton(
             self.tab_view.tab("Main Tab"),
             text="Submit",
             command=self.start_thread,
         )
-        Submit_button.place(relx=0.85, rely=0.86, anchor=tkinter.CENTER)
+        Submit_button.place(relx=0.85, rely=0.86, anchor=ctk.CENTER)
 
         self.status = ctk.CTkLabel(self.tab_view.tab("Main Tab"), text="Status:")
-        self.status.place(relx=0.8, rely=0.10, anchor=tkinter.CENTER)
+        self.status.place(relx=0.8, rely=0.10, anchor=ctk.CENTER)
 
         self.running_label = ctk.CTkLabel(
             self.tab_view.tab("Main Tab"), text="Idle", text_color="grey"
         )
-        self.running_label.place(relx=0.9, rely=0.1, anchor=tkinter.CENTER)
+        self.running_label.place(relx=0.9, rely=0.1, anchor=ctk.CENTER)
 
         self.progressbar = ctk.CTkProgressBar
 
