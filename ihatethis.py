@@ -75,18 +75,31 @@ class App(ctk.CTk):
             json.dump(userInput, f)
             f.close()
 
-    def shuffle_and_type(self):
-        X = random.choices(letters, k=random.randint(1, 25))
-        Xshuff = list(X)
-        random.shuffle(Xshuff)
-        Xshuff = "".join(Xshuff)
-        pyautogui.hotkey("ctrl", "e")
+    def new_shuffle_type(self):
         waitTime = random.uniform(
             int(self.entry_time_start.get()), int(self.entry_time_end.get())
         )
-        pyautogui.typewrite(Xshuff, interval=0.1)
+        pyautogui.typewrite(self.Xshuff, interval=0.1)
         pyautogui.press("enter")
         pyautogui.sleep(waitTime)
+
+    def old_shuffle_type(self):
+        pyautogui.typewrite(self.Xshuff)
+        pyautogui.press("enter")
+        pyautogui.PAUSE = random.uniform(
+            int(self.entry_time_start.get()), int(self.entry_time_end.get())
+        )
+
+    def shuffle_and_type(self):
+        X = random.choices(letters, k=random.randint(1, 25))
+        self.Xshuff = list(X)
+        random.shuffle(self.Xshuff)
+        self.Xshuff = "".join(self.Xshuff)
+        pyautogui.hotkey("ctrl", "e")
+        if self.shuffle_type.get() == 1:
+            self.new_shuffle_type()
+        else:
+            self.old_shuffle_type()
 
     def F12(self, InspectElement, InspectCount):
         if InspectElement == 1:
@@ -198,6 +211,13 @@ class App(ctk.CTk):
         self.ENTRY_INSPECT_ELEMENT.select()
         self.ENTRY_INSPECT_ELEMENT.place(relx=0.1, rely=0.58)
 
+        # shuffle type button
+        self.shuffle_type = ctk.CTkSwitch(
+            self.tab_view.tab("Main Tab"), text="on = new   off = old"
+        )
+        self.shuffle_type.place(relx=0.1, rely=0.7)
+
+        # typing interval
         self.entry_time_start = ctk.CTkEntry(self.tab_view.tab("Main Tab"), width=10)
         self.entry_time_start.place(relx=0.1, rely=0.9)
         self.text = ctk.CTkLabel(self.tab_view.tab("Main Tab"), text="to")
@@ -228,17 +248,17 @@ class App(ctk.CTk):
         self.text = ctk.CTkLabel(self.tab_view.tab("Settings"), text="to")
         self.text.place(relx=0.15, rely=0.8)
 
-        Save_button = ctk.CTkButton(
+        self.Save_button = ctk.CTkButton(
             self.tab_view.tab("Settings"), text="Save", command=self.save_settings
         )
-        Save_button.place(relx=0.85, rely=0.86, anchor=ctk.CENTER)
+        self.Save_button.place(relx=0.85, rely=0.86, anchor=ctk.CENTER)
 
-        Submit_button = ctk.CTkButton(
+        self.submit_button = ctk.CTkButton(
             self.tab_view.tab("Main Tab"),
             text="Submit",
             command=self.start_thread,
         )
-        Submit_button.place(relx=0.85, rely=0.86, anchor=ctk.CENTER)
+        self.submit_button.place(relx=0.85, rely=0.86, anchor=ctk.CENTER)
 
         self.status = ctk.CTkLabel(self.tab_view.tab("Main Tab"), text="Status:")
         self.status.place(relx=0.8, rely=0.10, anchor=ctk.CENTER)
