@@ -17,7 +17,7 @@ releases = g.get_repo(repo).get_releases()
 latest_release = releases[0]
 latest_version = latest_release.tag_name
 
-current_version = "2.4.0"
+current_version = "2.5.0"
 
 latest_semver = semver.VersionInfo.parse(latest_version)
 current_semver = semver.VersionInfo.parse(current_version)
