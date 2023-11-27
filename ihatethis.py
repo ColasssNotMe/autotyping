@@ -7,6 +7,7 @@ import json
 import github
 import semver
 import webbrowser
+import os
 
 # check for update
 repo = "ColasssNotMe/autotyping"
@@ -35,6 +36,12 @@ times = 0
 ctk.set_default_color_theme("green")
 
 
+def updateJSONver():
+    with open("config.json", "w") as f:
+        data = json.load(f)
+        data["version"] = latest_version
+
+
 class MyTabView(ctk.CTkTabview):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
@@ -46,9 +53,12 @@ class MyTabView(ctk.CTkTabview):
 
 class App(ctk.CTk):
     # init json file
-    with open("config.json", "w") as f:
-        data = {"normal": "35", "startTime": "0", "endTime": "1"}
-        json.dump(data, f)
+    if not os.path.exists("config.json"):
+        with open("config.json", "w") as f:
+            data = {"normal": "35", "startTime": "0", "endTime": "1"}
+            json.dump(data, f)
+    else:
+        pass
 
     def save_settings(self):
         super().__init__()
@@ -74,9 +84,9 @@ class App(ctk.CTk):
         waitTime = random.uniform(
             int(self.entry_time_start.get()), int(self.entry_time_end.get())
         )
-        pyautogui.sleep(waitTime)
-        pyautogui.typewrite(Xshuff, interval=1)
+        pyautogui.typewrite(Xshuff, interval=0.1)
         pyautogui.press("enter")
+        pyautogui.sleep(waitTime)
 
     def F12(self, InspectElement, InspectCount):
         if InspectElement == 1:
@@ -142,6 +152,7 @@ class App(ctk.CTk):
                 ],
             )
             updateButton.pack()
+            updateJSONver()
 
         else:
             print("No new releases available")
@@ -246,6 +257,7 @@ class App(ctk.CTk):
             self.entry_time_end.insert(0, data["endTime"])
 
 
-app = App()
-app.resizable(width=False, height=False)
-app.mainloop()
+if __name__ == "__main__":
+    app = App()
+    app.resizable(width=False, height=False)
+    app.mainloop()
