@@ -86,7 +86,7 @@ class App(ctk.CTk):
     def old_shuffle_type(self):
         pyautogui.typewrite(self.Xshuff)
         pyautogui.press("enter")
-        pyautogui.PAUSE = random.uniform(
+        pyautogui.sleep = random.uniform(
             int(self.entry_time_start.get()), int(self.entry_time_end.get())
         )
 
