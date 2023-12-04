@@ -37,9 +37,15 @@ ctk.set_default_color_theme("green")
 
 
 def updateJSONver():
-    with open("config.json", "w") as f:
-        data = json.load(f)
-        data["version"] = latest_version
+    if not os.path.exists("config.json"):
+        with open("config.json", "w") as f:
+            data = {"normal": "35", "startTime": "0", "endTime": "1"}
+            json.dump(data, f, indent=4)
+    else:
+        with open("config.json", "w") as f:
+            data = json.load(f)
+            data["version"] = latest_version
+            json.dump(data, f, indent=4)
 
 
 class MyTabView(ctk.CTkTabview):
@@ -53,12 +59,7 @@ class MyTabView(ctk.CTkTabview):
 
 class App(ctk.CTk):
     # init json file
-    if not os.path.exists("config.json"):
-        with open("config.json", "w") as f:
-            data = {"normal": "35", "startTime": "0", "endTime": "1"}
-            json.dump(data, f)
-    else:
-        pass
+    updateJSONver()
 
     def save_settings(self):
         super().__init__()
